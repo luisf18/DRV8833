@@ -289,7 +289,7 @@ class DRV8833 {
 
       for(int i=0;i<n;i++){
         moveRaw(duty,duty); delay( dt );
-        off();           delay( dt );
+        moveRaw(duty,duty); delay( dt );
       }
 
       sound_stop();
@@ -304,7 +304,7 @@ class DRV8833 {
 
       for(int i=0;i<n;i++){
         writeRaw(duty,motor); delay( dt );
-        off( motor );      delay( dt );
+        writeRaw(   0,motor ); delay( dt );
       }
 
       sound_stop( motor );
@@ -312,13 +312,8 @@ class DRV8833 {
 
     // tone
     void sound_tone( uint32_t tone ){
-      #ifdef ESP32
       sound_tone(tone,0);
       sound_tone(tone,1);
-      #else
-      analogWriteFreq(tone);
-      moveRaw( sound_duty(), sound_duty() );
-      #endif
     };
 
     void sound_tone( uint32_t tone, uint8_t motor ){
@@ -334,13 +329,8 @@ class DRV8833 {
 
     // stop
     void sound_stop(){
-      #ifdef ESP32
       sound_stop(0);
       sound_stop(1);
-      #else
-      analogWriteFreq(PWM_HZ);
-      #endif
-      move( Speed[0], Speed[1] );
     };
 
     void sound_stop( uint8_t motor ){
@@ -348,7 +338,6 @@ class DRV8833 {
       #ifdef ESP32
       ledcSetup( 0 + 2*motor, PWM_HZ, PWM_RES);
       ledcSetup( 1 + 2*motor, PWM_HZ, PWM_RES);
-      off(motor);
       #else
       analogWriteFreq(PWM_HZ);
       #endif
