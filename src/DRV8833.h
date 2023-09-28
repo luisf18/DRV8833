@@ -289,7 +289,7 @@ class DRV8833 {
 
       for(int i=0;i<n;i++){
         moveRaw(duty,duty); delay( dt );
-        moveRaw(duty,duty); delay( dt );
+        moveRaw(   0,   0); delay( dt );
       }
 
       sound_stop();
