@@ -171,6 +171,7 @@ class DRV8833 {
 
     void move(   int speed_0, int speed_1 ){ write(   speed_0, 0 ); write(   speed_1, 1 ); };
     void moveSD( int speed_0, int speed_1 ){ writeSD( speed_0, 0 ); writeSD( speed_1, 1 ); };
+    void moveRaw(   int speed_0, int speed_1 ){ writeRaw(   speed_0, 0 ); writeRaw(   speed_1, 1 ); };
 
     void off(){
       #ifdef ESP32
@@ -231,7 +232,19 @@ class DRV8833 {
     ////////////////////////////////////////////////////////////////////
     /////////////////////// LOWER LEVEL FUNCTIONS //////////////////////
     ////////////////////////////////////////////////////////////////////
-    
+
+    void writeRaw( int speed, int motor ){
+      if( motor > 1  ) return;
+      #ifdef ESP32
+      if( speed >= 0 ){ ledcWrite( 0 + 2*motor,  speed ); ledcWrite( 1 + 2*motor, 0 ); }
+      else            { ledcWrite( 1 + 2*motor, -speed ); ledcWrite( 0 + 2*motor, 0 ); }
+      #else
+      motor = 2*motor;
+      if( speed >= 0 ){ analogWrite( p[0+motor],  speed ); analogWrite( p[1+motor], 0 ); }
+      else            { analogWrite( p[1+motor], -speed ); analogWrite( p[0+motor], 0 ); }
+      #endif
+    };
+
     void write( int speed, int motor ){
       if( motor > 1  ) return;
       Speed[motor] = speed;
@@ -270,12 +283,12 @@ class DRV8833 {
     // Bip
 
     void bip( uint8_t n, uint16_t dt, uint32_t tone ){
-      
+
       sound_tone( tone );
       uint16_t duty = sound_duty();
 
       for(int i=0;i<n;i++){
-        move(duty,duty); delay( dt );
+        moveRaw(duty,duty); delay( dt );
         off();           delay( dt );
       }
 
@@ -290,7 +303,7 @@ class DRV8833 {
       uint16_t duty = sound_duty();
 
       for(int i=0;i<n;i++){
-        write(duty,motor); delay( dt );
+        writeRaw(duty,motor); delay( dt );
         off( motor );      delay( dt );
       }
 
@@ -304,7 +317,7 @@ class DRV8833 {
       sound_tone(tone,1);
       #else
       analogWriteFreq(tone);
-      move( sound_duty(), sound_duty() );
+      moveRaw( sound_duty(), sound_duty() );
       #endif
     };
 
@@ -316,7 +329,7 @@ class DRV8833 {
       #else
       analogWriteFreq(tone);
       #endif
-      write( sound_duty(), motor );
+      writeRaw( sound_duty(), motor );
     };
 
     // stop

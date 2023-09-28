@@ -10,9 +10,13 @@ void setup() {
 
 void loop() {
   motor.move( 1023, 1023 );
+  Serial.printf("speed_0: %d speed_1: %d\n", motor.read(0), motor.read(1) );
+  motor.bip(1,200,2000);
   delay(1000);
   motor.move( -1023, -1023 );
+  Serial.printf("speed_0: %d speed_1: %d\n", motor.read(0), motor.read(1) );
   delay(1000);
   motor.stop();
+  Serial.printf("speed_0: %d speed_1: %d\n", motor.read(0), motor.read(1) );
   delay(1000);
 }
