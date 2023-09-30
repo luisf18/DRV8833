@@ -121,6 +121,25 @@ class DRV8833 {
     };
 
     ////////////////////////////////////////////////////////////////////
+    ////////// HIGH LEVEL MOVE - DIFFERENTIAL DRIVE ROBOT //////////////
+    ////////////////////////////////////////////////////////////////////
+
+    void diff_drive(int linear, int angular, boolean invert, boolean radio_range ){
+      
+      if( radio_range ){
+        linear  = map( linear,  1000, 2000, -PWM_MAX, PWM_MAX );
+        angular = map( angular, 1000, 2000, -PWM_MAX, PWM_MAX );
+      }
+
+      int vel_l  = constrain( linear + angular, -PWM_MAX, PWM_MAX );
+      int vel_r  = constrain( linear - angular, -PWM_MAX, PWM_MAX );
+      
+      if(invert) move( -vel_r, -vel_l ); 
+      else       move(  vel_l,  vel_r );
+
+    }
+
+    ////////////////////////////////////////////////////////////////////
     //////////////////// HIGH LEVEL MOVE FUNCTIONS /////////////////////
     ////////////////////////////////////////////////////////////////////
     
